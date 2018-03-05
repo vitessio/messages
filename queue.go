@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"errors"
 	"strings"
 )
 
@@ -15,9 +14,8 @@ type Execer interface {
 
 // A Queue represents a Vitess message queue
 type Queue struct {
-	name          string
-	fieldNames    []string
-	maxConcurrent int
+	name       string
+	fieldNames []string
 
 	// predefine these sql strings
 	insertSQL          string
@@ -27,15 +25,10 @@ type Queue struct {
 }
 
 // NewQueue returns a queue definition
-func NewQueue(ctx context.Context, name string, maxConcurrent int, fieldNames []string) (*Queue, error) {
-	if maxConcurrent < 1 {
-		return nil, errors.New("maxConcurrent must be greater than 0")
-	}
-
+func NewQueue(ctx context.Context, name string, fieldNames []string) (*Queue, error) {
 	q := &Queue{
-		name:          name,
-		maxConcurrent: maxConcurrent,
-		fieldNames:    fieldNames,
+		name:       name,
+		fieldNames: fieldNames,
 	}
 
 	// only do this string manipulation once

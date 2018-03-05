@@ -51,7 +51,7 @@ func (q *Queue) Open(ctx context.Context, address, target string) error {
 	}
 
 	// generate the raw subscription
-	q.s = q.newSubscription(q.maxConcurrent)
+	q.s = q.newSubscription()
 
 	// create sub-context for subscribe goroutine with cancelFunc for cleanup
 	var newCtx context.Context
@@ -90,7 +90,7 @@ func (q *Queue) Open(ctx context.Context, address, target string) error {
 	return nil
 }
 
-func (q *Queue) newSubscription(maxConcurrent int) *subscription {
+func (q *Queue) newSubscription() *subscription {
 	s := &subscription{
 		isOpen:    false,
 		mu:        sync.RWMutex{},
