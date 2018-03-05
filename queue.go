@@ -38,6 +38,15 @@ func NewQueue(ctx context.Context, name string, fieldNames []string) (*Queue, er
 	return q, nil
 }
 
+// MustNewQueue returns a queue definition and panics if there is an error
+func MustNewQueue(ctx context.Context, name string, fieldNames []string) *Queue {
+	q, err := NewQueue(ctx, name, fieldNames)
+	if err != nil {
+		panic(err)
+	}
+	return q
+}
+
 // generateInsertSQL does the string manipulation to generate the insert statement
 func (q *Queue) generateInsertSQL() string {
 	buf := bytes.Buffer{}
