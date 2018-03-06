@@ -96,9 +96,9 @@ func (q *Queue) newSubscription() *subscription {
 		mu:        sync.RWMutex{},
 		destChan:  make(chan []interface{}),
 		errChan:   make(chan error),
-		streamSQL: fmt.Sprintf("stream * from `%s`", q.name),
-		ackSQL:    fmt.Sprintf("UPDATE `%s` SET time_acked=?, time_next=null WHERE id=? AND time_acked is null", q.name),
-		failSQL:   fmt.Sprintf("UPDATE `%s` SET time_next=%d WHERE id=? AND time_acked is null", q.name, math.MaxInt64),
+		streamSQL: fmt.Sprintf("stream * from `%s`", q.Name),
+		ackSQL:    fmt.Sprintf("UPDATE `%s` SET time_acked=?, time_next=null WHERE id=? AND time_acked is null", q.Name),
+		failSQL:   fmt.Sprintf("UPDATE `%s` SET time_next=%d WHERE id=? AND time_acked is null", q.Name, math.MaxInt64),
 	}
 
 	return s

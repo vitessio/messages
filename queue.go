@@ -14,7 +14,7 @@ type Execer interface {
 
 // A Queue represents a Vitess message queue
 type Queue struct {
-	name       string
+	Name       string
 	fieldNames []string
 
 	// predefine these sql strings
@@ -27,7 +27,7 @@ type Queue struct {
 // NewQueue returns a queue definition
 func NewQueue(ctx context.Context, name string, fieldNames []string) (*Queue, error) {
 	q := &Queue{
-		name:       name,
+		Name:       name,
 		fieldNames: fieldNames,
 	}
 
@@ -53,7 +53,7 @@ func (q *Queue) generateInsertSQL() string {
 
 	// generate default insert into queue with required fields
 	buf.WriteString("INSERT INTO `")
-	buf.WriteString(q.name)
+	buf.WriteString(q.Name)
 	buf.WriteString("` (id")
 
 	// add quoted user fields to the insert statement
@@ -79,7 +79,7 @@ func (q *Queue) generateInsertScheduledSQL() string {
 
 	// generate default insert into queue with required fields
 	buf.WriteString("INSERT INTO `")
-	buf.WriteString(q.name)
+	buf.WriteString(q.Name)
 	buf.WriteString("` (time_scheduled, id")
 
 	// add quoted user fields to the insert statement
