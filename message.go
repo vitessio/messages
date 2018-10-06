@@ -20,7 +20,7 @@ func (q *Queue) Add(ctx context.Context, e Execer, messageID int64, data ...inte
 	// append user data to args
 	args = append(args, data...)
 
-	_, err := e.ExecContext(ctx, q.insertScheduledSQL, args...)
+	_, err := e.ExecContext(ctx, q.insertSQL, args...)
 	return err
 }
 
@@ -42,7 +42,7 @@ func (q *Queue) AddScheduled(ctx context.Context, e Execer, messageID, timeSched
 	// append user data to args
 	args = append(args, data...)
 
-	_, err := e.ExecContext(ctx, q.insertSQL, args...)
+	_, err := e.ExecContext(ctx, q.insertScheduledSQL, args...)
 	return err
 }
 
