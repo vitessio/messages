@@ -24,8 +24,8 @@ type Queue struct {
 	s *subscription
 }
 
-// NewQueue returns a queue definition
-func NewQueue(ctx context.Context, name string, fieldNames []string) (*Queue, error) {
+// NewQueue returns a queue definition but doesn't make any network requests
+func NewQueue(name string, fieldNames []string) *Queue {
 	q := &Queue{
 		Name:       name,
 		fieldNames: fieldNames,
@@ -35,15 +35,6 @@ func NewQueue(ctx context.Context, name string, fieldNames []string) (*Queue, er
 	q.insertSQL = q.generateInsertSQL()
 	q.insertScheduledSQL = q.generateInsertScheduledSQL()
 
-	return q, nil
-}
-
-// MustNewQueue returns a queue definition and panics if there is an error
-func MustNewQueue(ctx context.Context, name string, fieldNames []string) *Queue {
-	q, err := NewQueue(ctx, name, fieldNames)
-	if err != nil {
-		panic(err)
-	}
 	return q
 }
 
