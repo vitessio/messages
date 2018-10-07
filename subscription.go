@@ -5,18 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
-	"sync"
 
 	"vitess.io/vitess/go/vt/vitessdriver"
 )
 
 // subscription allows users to interact with the queue
 type subscription struct {
-	mu sync.RWMutex
-
-	// this is true while a Subscription is live
-	isOpen bool
-
 	cancelFunc context.CancelFunc
 
 	// GetMessage sends through scan targets for rows.Scan
@@ -43,13 +37,6 @@ type subscription struct {
 // Only a single connection is opened and it remains open until Close is called.
 // Context cancellation is respected
 func (q *Queue) Open(ctx context.Context, address, target string) error {
-	q.s.mu.Lock()
-	defer q.s.mu.Unlock()
-
-	if q.s.isOpen {
-		return nil
-	}
-
 	// generate the raw subscription
 	q.s = q.newSubscription()
 
@@ -92,8 +79,6 @@ func (q *Queue) Open(ctx context.Context, address, target string) error {
 
 func (q *Queue) newSubscription() *subscription {
 	s := &subscription{
-		isOpen:    false,
-		mu:        sync.RWMutex{},
 		destChan:  make(chan []interface{}),
 		errChan:   make(chan error),
 		streamSQL: fmt.Sprintf("stream * from `%s`", q.Name),
@@ -125,16 +110,6 @@ func (s *subscription) openDB(ctx context.Context, address, target string) error
 // Close drains the processing channel and closes the connection to the database
 // TODO: Nack all remaining messages
 func (q *Queue) Close() error {
-	q.s.mu.Lock()
-	defer q.s.mu.Unlock()
-
-	// if the connection isn't open, no further work required
-	if !q.s.isOpen {
-		return nil
-	}
-
-	q.s.isOpen = false
-
 	// cancel context inside rows.Next()
 	q.s.cancelFunc()
 

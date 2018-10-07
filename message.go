@@ -2,7 +2,6 @@ package messages
 
 import (
 	"context"
-	"errors"
 	"math/rand"
 	"time"
 )
@@ -49,13 +48,6 @@ func (q *Queue) AddScheduled(ctx context.Context, e Execer, messageID, timeSched
 // Get returns the next available message. It blocks until either a message
 // is available or the context is cancelled.
 func (q *Queue) Get(ctx context.Context, dest ...interface{}) error {
-	q.s.mu.RLock()
-	defer q.s.mu.RUnlock()
-
-	if !q.s.isOpen {
-		return errors.New("cannot perform Get on closed queue")
-	}
-
 	select {
 	// send the scan targets through the channel - this will block until rows.Next()
 	// has another row available
