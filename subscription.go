@@ -68,10 +68,6 @@ func (q *Queue) Open(ctx context.Context, address, target string) error {
 			// this is a synchronous call, so isn't a data race, while getting all the data back to Get
 			q.s.errChan <- rows.Scan(dest...)
 		}
-
-		// close the channel before exiting
-		close(q.s.destChan)
-		close(q.s.errChan)
 	}()
 
 	return nil
@@ -110,6 +106,12 @@ func (s *subscription) openDB(ctx context.Context, address, target string) error
 // Close drains the processing channel and closes the connection to the database
 // TODO: Nack all remaining messages
 func (q *Queue) Close() error {
+	defer func() {
+		// close the channels before exiting
+		close(q.s.destChan)
+		close(q.s.errChan)
+	}()
+
 	// cancel context inside rows.Next()
 	q.s.cancelFunc()
 
